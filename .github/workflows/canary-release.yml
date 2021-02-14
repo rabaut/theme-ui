@@ -1,0 +1,33 @@
+name: Canary Release
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: [develop]
+
+jobs:
+  build:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn
+    release:
+      env:
+        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run:
+        

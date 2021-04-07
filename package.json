@@ -18,7 +18,8 @@
     "bump-version": "lerna version",
     "bump-version-next": "lerna version prerelease --preid alpha --exact --force-publish",
     "all-contributors:check": "./scripts/all-contributors-check.js",
-    "all-contributors:add": "npx all-contributors add"
+    "all-contributors:add": "npx all-contributors add",
+    "prepare": "npm run build"
   },
   "workspaces": [
     "packages/*"
